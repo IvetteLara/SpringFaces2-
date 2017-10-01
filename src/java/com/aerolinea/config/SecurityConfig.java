@@ -46,13 +46,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().permitAll()
                 .and()
                 .requiresChannel()
-                .antMatchers("/Pais/").requiresSecure();
+                .antMatchers("/UsuarioForm.xhtml").requiresSecure().and()
+                .formLogin().and()
+                .httpBasic();
         
         //disable csrf protection
         http.csrf().disable();
-    }    
+    }   
+    
+    //http.csrf().disable();        
+    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" 
+    
+    
     */
-        
+    
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
@@ -67,7 +74,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .httpBasic().and()
                 .logout().logoutUrl("/salir").logoutSuccessUrl("/login.xhtml");
     }
-        
+
+    
     /*
     @Override
     protected void configure(AuthenticationManagerBuilder auth)
