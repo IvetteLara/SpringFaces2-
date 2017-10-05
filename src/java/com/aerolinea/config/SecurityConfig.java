@@ -2,16 +2,25 @@ package com.aerolinea.config;
 
 import javax.ws.rs.HttpMethod;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    DriverManagerDataSource dataSource;
+    @Autowired
+    Codificar codificar;
 
     /*
     @Override
@@ -56,25 +65,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     
     //http.csrf().disable();        
     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" 
-    
-    
+       
     */
-    
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable();
-        http
-                .authorizeRequests()
-                .antMatchers("/").hasAuthority("ROLE_ADMIN")
-                .antMatchers("/index.xhtml").authenticated()
-                .antMatchers("/Pais/**").hasAuthority("ROLE_OTRO")
-                .anyRequest().permitAll().and()
-                .formLogin().loginPage("/login.xhtml")
-                .defaultSuccessUrl("/index.xhtml").and()
-                .httpBasic().and()
-                .logout().logoutUrl("/salir").logoutSuccessUrl("/login.xhtml");
-    }
-
     
     /*
     @Override
@@ -86,12 +78,36 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .withUser("admin").password("password").roles("USER", "ADMIN");
     }
     */
+    
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.csrf().disable();
 
-    @Autowired
-    DriverManagerDataSource dataSource;
-    @Autowired
-    Codificar codificar;
+        http
+                .authorizeRequests()
+                .antMatchers("/").hasAuthority("ROLE_ADMIN")
+                .antMatchers("/index.xhtml").authenticated()
+                .antMatchers("/Pais/**").hasAuthority("ROLE_OTRO")
+                .anyRequest().permitAll().and()
+                .formLogin()
+                .loginPage("/login.xhtml")
+                .defaultSuccessUrl("/index.xhtml").and()
+                .httpBasic().and()
+                .logout().logoutUrl("/salir").logoutSuccessUrl("/login.xhtml");
 
+        //maps the port 8080(http) to 8443(https)
+        http
+                .portMapper() 
+                .http(8080).mapsTo(8443);
+
+        //remember me
+        http.rememberMe()
+                .key("uniqueAndSecret")
+                .tokenValiditySeconds(86400);
+        //http.logout().deleteCookies("JSESSIONID");
+    }
+
+/**/
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth
