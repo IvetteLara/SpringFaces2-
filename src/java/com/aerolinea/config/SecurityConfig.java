@@ -1,17 +1,13 @@
 package com.aerolinea.config;
 
-import javax.ws.rs.HttpMethod;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
-import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+
 
 @Configuration
 @EnableWebSecurity
@@ -93,7 +89,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .loginPage("/login.xhtml")
                 .defaultSuccessUrl("/index.xhtml").and()
                 .httpBasic().and()
-                .logout().logoutUrl("/salir").logoutSuccessUrl("/login.xhtml");
+                .logout()
+                .logoutUrl("/salir")
+                .logoutSuccessUrl("/login.xhtml");
 
         //maps the port 8080(http) to 8443(https)
         http
@@ -102,7 +100,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         //remember me
         http.rememberMe()
-                .key("uniqueAndSecret")
+                 .key("uniqueAndSecret")
                 .tokenValiditySeconds(86400);
         //http.logout().deleteCookies("JSESSIONID");
     }
