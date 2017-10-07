@@ -102,7 +102,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.rememberMe()
                  .key("uniqueAndSecret")
                 .tokenValiditySeconds(86400);
-        //http.logout().deleteCookies("JSESSIONID");
+
     }
 
 /**/
