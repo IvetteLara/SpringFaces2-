@@ -8,15 +8,27 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.annotation.security.RolesAllowed;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.RequestScoped;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.context.WebApplicationContext;
 
-@ManagedBean
+//@ManagedBean
 //@SessionScoped
-@RequestScoped
+//@RequestScoped
+@Controller
+@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)		
 public class ControlUsuario implements Serializable{
     private Usuario usuario;
     private Pais pais;
@@ -24,11 +36,14 @@ public class ControlUsuario implements Serializable{
     private List<Usuario> usuarios;
     private List<Rol> roles;
     private List<Pais> paises;
-    @ManagedProperty("#{UsuarioDaoImpl}")
+    //@ManagedProperty("#{UsuarioDaoImpl}")
+    @Autowired
     private UsuarioDaoImpl usuarioDaoImpl;
-    @ManagedProperty("#{PaisDaoImpl}")
+    //@ManagedProperty("#{PaisDaoImpl}")
+    @Autowired
     private PaisDaoImpl paisDaoImpl;
-    @ManagedProperty("#{RolDaoImpl}")
+    //@ManagedProperty("#{RolDaoImpl}")
+    @Autowired
     private RolDaoImpl rolDaoImpl;
 
     public PaisDaoImpl getPaisDaoImpl() {
@@ -62,6 +77,8 @@ public class ControlUsuario implements Serializable{
         }
         
     }
+    
+    @RolesAllowed({"ROLE_ADMIN","ROLE_OTRO"})
     public String guardar() throws Exception{
         usuario.setPais(pais);
         usuario.setRol(rol);
@@ -69,6 +86,7 @@ public class ControlUsuario implements Serializable{
         return "/index.xhtml?faces-redirect=true";
     }    
     
+    @PreAuthorize("(hasRole('ROLE_ADMIN') and #u.idusuario.length() <= 4)")
     public String seleccionaEdit(Usuario u){
         usuario=u;
 //        pais=u.getPais();
@@ -76,6 +94,9 @@ public class ControlUsuario implements Serializable{
 //        FacesContext.getCurrentInstance().getExternalContext().getFlash().put("usuario", u);
         return "UsuarioForm.xhtml?faces-redirect=true";
     }
+    
+    
+    
     public Usuario getUsuario() {
         return usuario;
     }
@@ -95,6 +116,14 @@ public class ControlUsuario implements Serializable{
         this.rol = rol;
     }
 
+    //@Secured("ROLE_ADMIN")
+    //@RolesAllowed("ROLE_ADMIN")
+    //@PostAuthorize("returnObject.size() > 1")
+    /*
+    @PreAuthorize("hasAnyRole({'ROLE_OTRO', 'ROLE_ADMIN'})")
+    @PostFilter("hasRole('ROLE_ADMIN')	|| " + "filterObject.idusuario	== principal.username")  
+    */
+    @PreAuthorize("filterObject.idusuario == principal.username") 
     public List<Usuario> getUsuarios() throws Exception {
         usuarios=usuarioDaoImpl.findAll();
         return usuarios;
