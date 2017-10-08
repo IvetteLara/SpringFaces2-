@@ -117,6 +117,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "select u.idusuario, concat('ROLE_',r.rol) from usuario u, rol r where u.idrol = r.idrol and u.idusuario =  ?")
                 .passwordEncoder(codificar);
 
+    /* LDAP
+    auth
+        .ldapAuthentication()
+        .userSearchBase("CN=user")
+        .userSearchFilter("(sAMAccountName={0})")
+        .groupSearchBase("CN=Users")
+        .groupSearchFilter("member={0}")
+        //.groupRoleAttribute("ou").rolePrefix("ROLE_")
+        .contextSource()
+        .url("ldap://192.168.0.178:389/DC=java,DC=local");
+    */
+            
+            
     }
     /**/    
     
@@ -133,4 +146,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
     */    
     
+
 }

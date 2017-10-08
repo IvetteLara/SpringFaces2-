@@ -123,7 +123,7 @@ public class ControlUsuario implements Serializable{
     @PreAuthorize("hasAnyRole({'ROLE_OTRO', 'ROLE_ADMIN'})")
     @PostFilter("hasRole('ROLE_ADMIN')	|| " + "filterObject.idusuario	== principal.username")  
     */
-    @PreAuthorize("filterObject.idusuario == principal.username") 
+    @PostFilter("filterObject.idusuario	== principal.username") 
     public List<Usuario> getUsuarios() throws Exception {
         usuarios=usuarioDaoImpl.findAll();
         return usuarios;
