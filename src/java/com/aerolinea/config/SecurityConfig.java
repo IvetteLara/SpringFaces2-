@@ -1,5 +1,6 @@
 package com.aerolinea.config;
 
+import javax.ws.rs.HttpMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -57,11 +58,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         
         //disable csrf protection
         http.csrf().disable();
-    }   
     
-    //http.csrf().disable();        
+        //maps the port 8080(http) to 8443(https)
+        http
+                .portMapper() 
+                .http(8080).mapsTo(8443);
+    }   
+    */
+    
+    /*
     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" 
-       
     */
     
     /*
@@ -93,19 +99,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutUrl("/salir")
                 .logoutSuccessUrl("/login.xhtml");
 
-        //maps the port 8080(http) to 8443(https)
-        http
-                .portMapper() 
-                .http(8080).mapsTo(8443);
-
         //remember me
         http.rememberMe()
-                 .key("uniqueAndSecret")
+                .key("uniqueAndSecret")
                 .tokenValiditySeconds(86400);
 
     }
-
-/**/
+    
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth
@@ -118,5 +118,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .passwordEncoder(codificar);
 
     }
-
+    /**/    
+    
+    /*
+    @Autowired
+    AerolineaUserService AerolineaUserService;
+    
+    
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth
+                .userDetailsService(AerolineaUserService)
+                .passwordEncoder(codificar);
+    }
+    */    
+    
 }
